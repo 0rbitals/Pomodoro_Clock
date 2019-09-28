@@ -8,20 +8,22 @@ class App extends Component {
       breakLength: 300000,
       timeLeft: 1500000,
       timerOn: false,
-      currentState: 'session',
+      currentState: 'Session',
     };
-    this.now = new Date().getTime();
+    this.timerID = 0;
     this.incrementTime = this.incrementTime.bind(this);
     this.decrementTime = this.decrementTime.bind(this);
     this.toggleTimer = this.toggleTimer.bind(this);
     this.startTimer = this.startTimer.bind(this);
-    this.SessionTimer = this.SessionTimer.bind(this);
+    this.sessionTimer = this.sessionTimer.bind(this);
+    this.breakTimer = this.breakTimer.bind(this);
+    this.reset = this.reset.bind(this);
   }
 
   componentDidUpdate() {
     const { timerOn } = this.state;
     if (timerOn) {
-      setTimeout(this.startTimer, 1000);
+      this.timerID = setTimeout(this.startTimer, 1000);
     }
   }
 
@@ -57,19 +59,36 @@ class App extends Component {
 
   startTimer() {
     const { currentState } = this.state;
-    if (currentState === 'session') {
-      this.SessionTimer();
-    } else if (currentState === 'break') {
-      this.BreakTimer();
+    if (currentState === 'Session') {
+      this.sessionTimer();
+    } else if (currentState === 'Break') {
+      this.breakTimer();
     }
   }
 
-  SessionTimer() {
-    const { timeLeft } = this.state;
-    if (timeLeft <= 5) {
+  sessionTimer() {
+    const { timeLeft, breakLength } = this.state;
+    if (timeLeft <= 0) {
       this.setState({
-        currentState: 'break',
+        currentState: 'Break',
+        timeLeft: breakLength,
       });
+      this.audioBeep.play();
+    } else {
+      this.setState((prevState) => ({
+        timeLeft: prevState.timeLeft - 1000,
+      }));
+    }
+  }
+
+  breakTimer() {
+    const { timeLeft, sessionLength } = this.state;
+    if (timeLeft <= 0) {
+      this.setState({
+        currentState: 'Session',
+        timeLeft: sessionLength,
+      });
+      this.audioBeep.play();
     } else {
       this.setState((prevState) => ({
         timeLeft: prevState.timeLeft - 1000,
@@ -84,6 +103,7 @@ class App extends Component {
         timerOn: true,
       });
     } else {
+      clearTimeout(this.timerID);
       this.setState({
         timerOn: false,
       });
@@ -91,15 +111,37 @@ class App extends Component {
   }
 
   reset() {
+    clearTimeout(this.timerID);
     this.setState({
-      sessionLength: 25,
-      breakLength: 5,
-      timeLeft: '25:00',
+      sessionLength: 1500000,
+      breakLength: 300000,
+      timeLeft: 1500000,
+      timerOn: false,
+      currentState: 'Session',
     });
+    this.audioBeep.pause();
+    this.audioBeep.currentTime = 0;
   }
 
   render() {
-    const { sessionLength, breakLength, timeLeft } = this.state;
+    const {
+      sessionLength,
+      breakLength,
+      timeLeft,
+      currentState,
+    } = this.state;
+    let minutes = Math.floor(timeLeft / 60000).toString();
+    let seconds = Math.floor((timeLeft % (1000 * 60)) / 1000).toString();
+    if (minutes.split('').length < 2) {
+      minutes = minutes.split('');
+      minutes.unshift('0');
+      minutes = minutes.join('');
+    }
+    if (seconds.split('').length < 2) {
+      seconds = seconds.split('');
+      seconds.push('0');
+      seconds = seconds.join('');
+    }
     return (
       <div>
         <h1>Pomodoro Clock</h1>
@@ -116,11 +158,21 @@ class App extends Component {
           <button id="session-decrement" name="sessionLength" onClick={this.decrementTime} type="button">Down</button>
         </div>
         <div id="timer-label">
-          Session:
-          <div id="time-left">{ `${Math.floor(timeLeft / 60000)}:${Math.floor((timeLeft % (1000 * 60)) / 1000)}` }</div>
+          {currentState}
+          <div id="time-left">{ `${minutes}:${seconds}` }</div>
           <button type="button" onClick={this.toggleTimer} id="start_stop">Start/Pause</button>
-          <button type="button" id="reset">Reset</button>
+          <button type="button" onClick={this.reset} id="reset">Reset</button>
         </div>
+        <audio
+          id="beep"
+          ref={(audio) => { this.audioBeep = audio; }}
+        >
+          <source src="http://soundbible.com/grab.php?id=2197&type=wav" />
+          <track
+            kind="captions"
+            label="beep"
+          />
+        </audio>
       </div>
     );
   }
