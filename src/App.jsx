@@ -59,23 +59,22 @@ class App extends Component {
     const { currentState } = this.state;
     if (currentState === 'session') {
       this.SessionTimer();
+    } else if (currentState === 'break') {
+      this.BreakTimer();
     }
   }
 
   SessionTimer() {
     const { timeLeft } = this.state;
-    const session = new Date();
-    session.setTime(timeLeft);
     if (timeLeft <= 5) {
       this.setState({
-        timerOn: false,
+        currentState: 'break',
       });
     } else {
       this.setState((prevState) => ({
         timeLeft: prevState.timeLeft - 1000,
       }));
     }
-    console.log(session.getMinutes(), session.getSeconds());
   }
 
   toggleTimer() {
