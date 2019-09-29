@@ -1,0 +1,53 @@
+@import url('https://fonts.googleapis.com/css?family=Pacifico&display=swap');
+
+html  {
+  display: flex;
+  justify-content: center;
+  font-family: 'Pacifico', cursive;
+  color: white;
+  background-color: rgb(255, 181, 176);
+}
+
+div { // root div
+  background-color: #400A06;
+  padding: 10px;
+  border-radius: 5px;
+  div { // container div 
+    display: flex;
+    width: 300px;
+    flex-flow: row wrap;
+    margin-top: 5px;
+    div { // divs with buttons
+      background-color: rgb(82, 5, 0);
+      color: rgb(255, 255, 255);
+      text-shadow: 1px 1px 1px black;
+      margin: 2px;
+      width: 42%;
+      flex-flow: column wrap;
+      align-items: center;
+      button {
+        background-color: rgb(177, 29, 19);
+        border: none;
+        border-radius: 3px;
+        color: white;
+        font-weight: bold;
+        margin: 2px;
+      }
+      div { //display divs
+        background-color: rgb(255, 173, 65);
+        color: white;
+        width: 50px;
+        margin: 10px;
+        text-align: center;
+      }
+    }
+    #timer-label {
+      width: 100%;
+      flex-flow: column;
+      align-items: center;
+      #time-left {
+        width: 50px;
+      }
+    }
+  }
+}
