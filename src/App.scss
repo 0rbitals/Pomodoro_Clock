@@ -6,6 +6,7 @@ html  {
   font-family: 'Pacifico', cursive;
   color: white;
   background-color: rgb(255, 181, 176);
+  margin-top: 10%;
 }
 
 div { // root div
@@ -16,7 +17,6 @@ div { // root div
     display: flex;
     width: 300px;
     flex-flow: row wrap;
-    margin-top: 5px;
     div { // divs with buttons
       background-color: rgb(82, 5, 0);
       color: rgb(255, 255, 255);
